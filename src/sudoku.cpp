@@ -72,7 +72,7 @@ void load_file(Grid<s8>& grid, const char filename[]) {
         for (s32 i = 0; i < grid_w; ++i) {
             const s8 n = line[static_cast<size_t>(i)] - '0';
             if (n < 0 || n > 9) {
-                LOG_ERROR("invalid grid value: %d", n);
+                LOG_ERROR("invalid grid value: %d\n", n);
                 exit(1);
             }
             grid.set(i, y, line[static_cast<size_t>(i)] - '0');
@@ -81,11 +81,11 @@ void load_file(Grid<s8>& grid, const char filename[]) {
     }
 
     if (y < grid_l) {
-        LOG_ERROR("file does not have enough rows: found %d, expected %d", y, grid_l);
+        LOG_ERROR("file does not have enough rows: found %d, expected %d\n", y, grid_l);
         exit(1);
     }
     if (!fs.eof()) {
-        LOG_ERROR("file contains additional junk");
+        LOG_ERROR("file contains additional junk\n");
         exit(1);
     }
 }
