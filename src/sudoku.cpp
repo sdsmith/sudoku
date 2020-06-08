@@ -1,6 +1,7 @@
 #include "types.h"
 #include <cassert>
 #include <fstream>
+#include <bitset>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -48,7 +49,12 @@ public:
 
 constexpr s32 grid_l = 9;
 constexpr s32 grid_w = 9;
-
+constexpr s32 square_per_box = 3;
+constexpr s32 box_l = grid_l / square_per_box;
+constexpr s32 box_w = grid_w / square_per_box;
+static_assert(box_l == box_w, "sudoku grid should be square");
+static_assert(box_w == square_per_box, "sudoku grid mis-shapen");
+static_assert(grid_w / 3 == square_per_box, "sudoku grid mis-shapen");
 #define LOG_ERROR(...) fprintf(stderr, "ERROR: " __VA_ARGS__);
 
 void load_file(Grid<s8>& grid, const char filename[]) {
@@ -85,7 +91,7 @@ void load_file(Grid<s8>& grid, const char filename[]) {
 }
 
 constexpr bool should_draw_grid_divider(s32 i) {
-    static_assert(grid_w == grid_l, "sudoku grid should be a square");
+    static_assert(grid_w == grid_l, "sudoku grid should be square");
     return i % 3 == 2 && i != 0 && i < grid_w - 1;
 }
 
@@ -112,6 +118,83 @@ void print_grid(const Grid<s8>& grid) {
     printf("%s", s.c_str());
 }
 
+
+constexpr s32 box_number(s32 box_x, s32 box_y) {
+    // report 1-indexed
+    return box_y * box_w + box_x + 1;
+}
+
+void validate_grid(const Grid<s8>& grid) {
+    // NOTE(sdsmith): report rows/columns/boxes as 1-indexed
+
+    constexpr s32 expected_sum = 45; // sum(1..9)
+
+    // check row
+    for (s32 y = 0; y < grid_l; ++y) {
+        s32 sum = 0;
+        std::bitset<grid_w> nums;
+        for (s32 x = 0; x < grid_w; ++x) {
+            const s8 n = grid.get(x, y);
+            sum += n;
+            if (nums.test(static_cast<u8>(n - 1))) {
+                LOG_ERROR("multiple %ds in row %d\n", n, y + 1);
+            } else {
+                nums.set(static_cast<u8>(n - 1));
+            }
+        }
+
+        if (sum != expected_sum) {
+            LOG_ERROR("row %d invalid\n", y + 1);
+        }
+    }
+
+    // check column
+    for (s32 x = 0; x < grid_w; ++x) {
+        s32 sum = 0;
+        std::bitset<grid_l> nums;
+        for (s32 y = 0; y < grid_l; ++y) {
+            const s8 n = grid.get(x, y);
+            sum += n;
+            if (nums.test(static_cast<u8>(n - 1))) {
+                LOG_ERROR("multiple %ds in column %d\n", n, x + 1);
+            } else {
+                nums.set(static_cast<u8>(n - 1));
+            }
+        }
+
+        if (sum != expected_sum) {
+            LOG_ERROR("column %d invalid\n", x + 1);
+        }
+    }
+
+    // check box
+    for (s32 box_y = 0; box_y < box_w; ++box_y) {
+        for (s32 box_x = 0; box_x < box_l; ++box_x) {
+            const s32 x_offset = box_x * square_per_box;
+            const s32 y_offset = box_y * square_per_box;
+
+            s32 sum = 0;
+            std::bitset<grid_l * grid_w> nums;
+            for (s32 y = y_offset; y < y_offset + square_per_box; ++y) {
+                for (s32 x = x_offset; x < x_offset + square_per_box; ++x) {
+                    const s8 n = grid.get(x, y);
+                    sum += n;
+                    if (nums.test(static_cast<u8>(n - 1))) {
+                        LOG_ERROR("multiple %d in box %d\n", n, box_number(box_x, box_y));
+                    } else {
+                        nums.set(static_cast<u8>(n - 1));
+                    }
+                }
+            }
+
+            if (sum != expected_sum) {
+                LOG_ERROR("box %d invalid\n", box_number(box_x, box_y));
+            }
+        }
+    }
+
+}
+
 int main(int argc, char* argv[]) {
 
     if (argc != 2) {
@@ -123,6 +206,7 @@ int main(int argc, char* argv[]) {
     Grid<s8> grid(grid_l, grid_w);
     load_file(grid, grid_file);
     print_grid(grid);
+    validate_grid(grid);
 
     return 0;
 }
