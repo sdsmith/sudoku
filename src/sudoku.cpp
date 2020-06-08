@@ -57,7 +57,13 @@ static_assert(box_w == square_per_box, "sudoku grid mis-shapen");
 static_assert(grid_w / 3 == square_per_box, "sudoku grid mis-shapen");
 #define LOG_ERROR(...) fprintf(stderr, "ERROR: " __VA_ARGS__);
 
-void load_file(Grid<s8>& grid, const char filename[]) {
+constexpr char blank = '-';
+
+bool is_accepted_character(char c) {
+    return ('0' <= c && c <= '9') || c == blank;
+}
+
+void load_file(Grid<char>& grid, const char filename[]) {
     std::ifstream fs;
     fs.open(filename, std::ios_base::in);
     assert(fs.is_open());
@@ -70,12 +76,12 @@ void load_file(Grid<s8>& grid, const char filename[]) {
             exit(1);
         }
         for (s32 i = 0; i < grid_w; ++i) {
-            const s8 n = line[static_cast<size_t>(i)] - '0';
-            if (n < 0 || n > 9) {
-                LOG_ERROR("invalid grid value: %d\n", n);
+            const char c = line[static_cast<u32>(i)];
+            if (!is_accepted_character(c)) {
+                LOG_ERROR("invalid grid value: %c\n", c);
                 exit(1);
             }
-            grid.set(i, y, line[static_cast<size_t>(i)] - '0');
+            grid.set(i, y, line[static_cast<u32>(i)]);
         }
         ++y;
     }
@@ -95,12 +101,12 @@ constexpr bool should_draw_grid_divider(s32 i) {
     return i % 3 == 2 && i != 0 && i < grid_w - 1;
 }
 
-void print_grid(const Grid<s8>& grid) {
+void print_grid(const Grid<char>& grid) {
     std::string s;
     for (s32 y = 0; y < 9; ++y) {
         for (s32 x = 0; x < 9; ++x) {
-            const s8 n = grid.get(x, y);
-            s += '0' + n;
+            const char c = grid.get(x, y);
+            s += c;
             s += ' ';
 
             if (should_draw_grid_divider(x)) {
@@ -124,7 +130,7 @@ constexpr s32 box_number(s32 box_x, s32 box_y) {
     return box_y * box_w + box_x + 1;
 }
 
-void validate_grid(const Grid<s8>& grid) {
+void validate_grid(const Grid<char>& grid) {
     // NOTE(sdsmith): report rows/columns/boxes as 1-indexed
 
     constexpr s32 expected_sum = 45; // sum(1..9)
@@ -134,12 +140,18 @@ void validate_grid(const Grid<s8>& grid) {
         s32 sum = 0;
         std::bitset<grid_w> nums;
         for (s32 x = 0; x < grid_w; ++x) {
-            const s8 n = grid.get(x, y);
+            const char c = grid.get(x, y);
+            if (c == blank) {
+                printf("grid is not complete\n");
+                return;
+            }
+            
+            const s32 n = c - '0';
             sum += n;
-            if (nums.test(static_cast<u8>(n - 1))) {
+            if (nums.test(static_cast<u32>(n - 1))) {
                 LOG_ERROR("multiple %ds in row %d\n", n, y + 1);
             } else {
-                nums.set(static_cast<u8>(n - 1));
+                nums.set(static_cast<u32>(n - 1));
             }
         }
 
@@ -153,12 +165,18 @@ void validate_grid(const Grid<s8>& grid) {
         s32 sum = 0;
         std::bitset<grid_l> nums;
         for (s32 y = 0; y < grid_l; ++y) {
-            const s8 n = grid.get(x, y);
+            const char c = grid.get(x, y);
+            if (c == blank) {
+                printf("grid is not complete\n");
+                return;
+            }
+
+            const s32 n = c - '0';
             sum += n;
-            if (nums.test(static_cast<u8>(n - 1))) {
+            if (nums.test(static_cast<u32>(n - 1))) {
                 LOG_ERROR("multiple %ds in column %d\n", n, x + 1);
             } else {
-                nums.set(static_cast<u8>(n - 1));
+                nums.set(static_cast<u32>(n - 1));
             }
         }
 
@@ -177,12 +195,18 @@ void validate_grid(const Grid<s8>& grid) {
             std::bitset<grid_l * grid_w> nums;
             for (s32 y = y_offset; y < y_offset + square_per_box; ++y) {
                 for (s32 x = x_offset; x < x_offset + square_per_box; ++x) {
-                    const s8 n = grid.get(x, y);
+                    const char c = grid.get(x, y);
+                    if (c == blank) {
+                        printf("grid is not complete\n");
+                        return;
+                    }
+                    
+                    const s32 n = c - '0';
                     sum += n;
-                    if (nums.test(static_cast<u8>(n - 1))) {
+                    if (nums.test(static_cast<u32>(n - 1))) {
                         LOG_ERROR("multiple %d in box %d\n", n, box_number(box_x, box_y));
                     } else {
-                        nums.set(static_cast<u8>(n - 1));
+                        nums.set(static_cast<u32>(n - 1));
                     }
                 }
             }
@@ -203,7 +227,7 @@ int main(int argc, char* argv[]) {
     }
     const char* grid_file = argv[1];
 
-    Grid<s8> grid(grid_l, grid_w);
+    Grid<char> grid(grid_l, grid_w);
     load_file(grid, grid_file);
     print_grid(grid);
     validate_grid(grid);
