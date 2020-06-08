@@ -130,6 +130,10 @@ constexpr s32 box_number(s32 box_x, s32 box_y) {
     return box_y * box_w + box_x + 1;
 }
 
+void solve_grid(Grid<char>& grid) {
+    (void)grid;
+}
+
 void validate_grid(const Grid<char>& grid) {
     // NOTE(sdsmith): report rows/columns/boxes as 1-indexed
 
@@ -217,6 +221,7 @@ void validate_grid(const Grid<char>& grid) {
         }
     }
 
+    printf("QED\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -229,7 +234,13 @@ int main(int argc, char* argv[]) {
 
     Grid<char> grid(grid_l, grid_w);
     load_file(grid, grid_file);
+    printf("original grid...\n");
     print_grid(grid);
+    printf("solving...\n");
+    solve_grid(grid);
+    printf("final grid...\n");
+    print_grid(grid);
+    printf("validating...\n");
     validate_grid(grid);
 
     return 0;
