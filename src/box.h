@@ -5,7 +5,6 @@
 #include <array>
 #include <vector>
 
-
 struct Cell {
     char c = blank;
     std::vector<int> possibilities; //< possible numbers

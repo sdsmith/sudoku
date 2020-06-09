@@ -6,7 +6,6 @@
 #include "types.h"
 #include <utility>
 
-
 /*
   Box numbering scheme:
   +---+---+---+
@@ -25,16 +24,17 @@ struct Position {
     constexpr Position(s32 x, s32 y) : x(x), y(y) {}
 };
 
-constexpr Position box_position(s32 box_num) noexcept {
+constexpr Position box_position(s32 box_num) noexcept
+{
     const s32 box_x = box_num % side_len;
     const s32 box_y = box_num / side_len;
     return Position(box_x, box_y);
 }
 
-constexpr s32 box_number(s32 box_x, s32 box_y) noexcept {
+constexpr s32 box_number(s32 box_x, s32 box_y) noexcept
+{
     return box_y * box_w + box_x;
 }
-
 
 class SudokuGrid : public Grid<Cell> {
 public:

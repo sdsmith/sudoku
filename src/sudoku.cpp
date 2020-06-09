@@ -1,5 +1,5 @@
-#include "defines.h"
 #include "box.h"
+#include "defines.h"
 #include "grid.h"
 #include "sudoku_grid.h"
 #include "types.h"
@@ -12,12 +12,13 @@
 #include <string>
 #include <vector>
 
-
-bool is_accepted_character(char c) noexcept {
+bool is_accepted_character(char c) noexcept
+{
     return ('0' <= c && c <= '9') || c == blank;
 }
 
-void load_file(SudokuGrid& grid, const char filename[]) noexcept(false) {
+void load_file(SudokuGrid& grid, const char filename[]) noexcept(false)
+{
     std::ifstream fs;
     fs.open(filename, std::ios_base::in);
     assert(fs.is_open());
@@ -26,7 +27,8 @@ void load_file(SudokuGrid& grid, const char filename[]) noexcept(false) {
     s32 y = 0;
     while (std::getline(fs, line) && y < grid_l) {
         if (line.size() > grid_w) {
-            LOG_ERROR("line longer than expected: size %zu, expected %d\n", line.size(), grid_w);
+            LOG_ERROR("line longer than expected: size %zu, expected %d\n",
+                      line.size(), grid_w);
             exit(1);
         }
         for (s32 i = 0; i < grid_w; ++i) {
@@ -41,7 +43,8 @@ void load_file(SudokuGrid& grid, const char filename[]) noexcept(false) {
     }
 
     if (y < grid_l) {
-        LOG_ERROR("file does not have enough rows: found %d, expected %d\n", y, grid_l);
+        LOG_ERROR("file does not have enough rows: found %d, expected %d\n", y,
+                  grid_l);
         exit(1);
     }
     if (!fs.eof()) {
@@ -50,12 +53,14 @@ void load_file(SudokuGrid& grid, const char filename[]) noexcept(false) {
     }
 }
 
-constexpr bool should_draw_grid_divider(s32 i) noexcept {
+constexpr bool should_draw_grid_divider(s32 i) noexcept
+{
     static_assert(grid_w == grid_l, "sudoku grid should be square");
     return i % 3 == 2 && i != 0 && i < grid_w - 1;
 }
 
-void print_grid(const SudokuGrid& grid) noexcept {
+void print_grid(const SudokuGrid& grid) noexcept
+{
     std::string s;
     for (s32 y = 0; y < 9; ++y) {
         for (s32 x = 0; x < 9; ++x) {
@@ -83,18 +88,21 @@ void print_grid(const SudokuGrid& grid) noexcept {
  *
  * @return True if possibilities were added.
  */
-bool mark_possibilities_if_box_2_free_cells(Box& box,
-                                            char c,
-                                            const std::bitset<side_len>& row_has_c,
-                                            const std::bitset<side_len>& col_has_c)
+bool mark_possibilities_if_box_2_free_cells(
+    Box& box, char c, const std::bitset<side_len>& row_has_c,
+    const std::bitset<side_len>& col_has_c)
 {
     // @memory: @speed: don't need a vector. A 2 el stack alloc collection would
     // work.
     std::vector<Cell*> v;
     for (u8 row = 0; row < side_len; ++row) {
-        if (row_has_c.test(row)) { continue; }
+        if (row_has_c.test(row)) {
+            continue;
+        }
         for (u8 col = 0; col < side_len; ++col) {
-            if (col_has_c.test(col)) { continue; }
+            if (col_has_c.test(col)) {
+                continue;
+            }
 
             Cell& cell = box.get(col, row);
             if (cell.c == blank) {
@@ -108,11 +116,14 @@ bool mark_possibilities_if_box_2_free_cells(Box& box,
     }
 
     assert(v.size() == 2);
-    for (Cell* cell : v) { cell->add_possibility(c); }
+    for (Cell* cell : v) {
+        cell->add_possibility(c);
+    }
     return true;
 }
 
-void solve_grid(SudokuGrid& grid) {
+void solve_grid(SudokuGrid& grid)
+{
     // TODO(sdsmith): adapt for every number and every box
     char cur_c = '1';
     Box box = grid.get_box(0);
@@ -137,17 +148,20 @@ void solve_grid(SudokuGrid& grid) {
         }
     }
 
-    if (row_has_c.count() == side_len - 1 && col_has_c.count() == side_len - 1) {
+    if (row_has_c.count() == side_len - 1 &&
+        col_has_c.count() == side_len - 1) {
         // Row+col is enough to determine the value
         box.set(first_unset_bit(col_has_c), first_unset_bit(row_has_c), cur_c);
     } else { // Determine any possibilities
-        mark_possibilities_if_box_2_free_cells(box, cur_c, row_has_c, col_has_c);
+        mark_possibilities_if_box_2_free_cells(box, cur_c, row_has_c,
+                                               col_has_c);
     }
 
     // TODO(sdsmith):
 }
 
-void validate_grid(const SudokuGrid& grid) {
+void validate_grid(const SudokuGrid& grid)
+{
     // NOTE(sdsmith): report rows/columns/boxes as 1-indexed
 
     constexpr s32 expected_sum = 45; // sum(1..9)
@@ -221,7 +235,8 @@ void validate_grid(const SudokuGrid& grid) {
                     const s32 n = c - '0';
                     sum += n;
                     if (nums.test(static_cast<u32>(n - 1))) {
-                        LOG_ERROR("multiple %d in box %d\n", n, box_number(box_x, box_y) + 1);
+                        LOG_ERROR("multiple %d in box %d\n", n,
+                                  box_number(box_x, box_y) + 1);
                     } else {
                         nums.set(static_cast<u32>(n - 1));
                     }
@@ -237,7 +252,8 @@ void validate_grid(const SudokuGrid& grid) {
     printf("QED\n");
 }
 
-int main(int argc, char* argv[]) try {
+int main(int argc, char* argv[])
+try {
     if (argc != 2) {
         printf("Usage: sudoku <grid_file>\n");
         return 1;

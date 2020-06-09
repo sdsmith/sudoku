@@ -4,8 +4,7 @@
 #include <cassert>
 #include <vector>
 
-
-template<class T>
+template <class T>
 class Grid {
 protected:
     std::vector<std::vector<T>> m_grid;
@@ -13,7 +12,7 @@ protected:
 public:
     Grid(s32 length, s32 width)
         : m_grid(static_cast<u32>(length),
-                  std::vector<T>(static_cast<u32>(width)))
+                 std::vector<T>(static_cast<u32>(width)))
     {
         assert(length > 0);
         assert(width > 0);
@@ -21,8 +20,14 @@ public:
 
     virtual ~Grid() {}
 
-    [[nodiscard]] s32 length() const noexcept { return static_cast<s32>(m_grid.size()); }
-    [[nodiscard]] s32 width() const noexcept { return static_cast<s32>(m_grid[0].size()); }
+    [[nodiscard]] s32 length() const noexcept
+    {
+        return static_cast<s32>(m_grid.size());
+    }
+    [[nodiscard]] s32 width() const noexcept
+    {
+        return static_cast<s32>(m_grid[0].size());
+    }
 
     [[nodiscard]] T get(s32 x, s32 y) const noexcept
     {

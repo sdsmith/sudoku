@@ -3,7 +3,6 @@
 #include "types.h"
 #include <cstdio>
 
-
 constexpr char blank = '-';
 constexpr s32 side_len = 3;
 constexpr s32 grid_l = 9;
