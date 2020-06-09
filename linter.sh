@@ -5,6 +5,16 @@ cd artifacts
 
 # Clang format
 #
+if ! command -v clang-format >/dev/null ; then
+    echo "WARNING: clang-format exe not found"
+    exit 1
+fi
+
+if ! command -v clang-format >/dev/null ; then
+    echo "WARNING: clang-tidy exe not found"
+    exit 1
+fi
+
 echo "Running clang-format..."
 find ../src -regex '.*\.\(cpp\|h\)' -exec clang-format -style=file -i {} \;
 
