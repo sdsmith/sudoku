@@ -9,7 +9,7 @@ struct Cell {
     char c = blank;
     std::vector<int> possibilities; //< possible numbers
 
-    Cell() {}
+    Cell() = default;
     Cell(char c) : c(c) {}
 
     void add_possibility(char c);
@@ -31,8 +31,8 @@ public:
     bool contains(char c) noexcept;
     void set(u8 col, u8 row, char c) noexcept;
     Cell& get(u8 col, u8 row) noexcept;
-    bool row_contains(u8 row, char c) const noexcept;
-    bool col_contains(u8 col, char c) const noexcept;
+    [[nodiscard]] bool row_contains(u8 row, char c) const noexcept;
+    [[nodiscard]] bool col_contains(u8 col, char c) const noexcept;
 };
 
 class AdjacentBoxRow {
@@ -40,7 +40,7 @@ class AdjacentBoxRow {
 
 public:
     AdjacentBoxRow(std::vector<Box>&& boxes);
-    bool contains(u8 row, char c) const noexcept;
+    [[nodiscard]] bool contains(u8 row, char c) const noexcept;
 };
 
 class AdjacentBoxCol {
@@ -48,5 +48,5 @@ class AdjacentBoxCol {
 
 public:
     AdjacentBoxCol(std::vector<Box>&& boxes);
-    bool contains(u8 row, char c) const noexcept;
+    [[nodiscard]] bool contains(u8 row, char c) const noexcept;
 };

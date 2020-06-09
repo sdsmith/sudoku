@@ -18,7 +18,7 @@ public:
         assert(width > 0);
     }
 
-    virtual ~Grid() {}
+    virtual ~Grid() = default;
 
     [[nodiscard]] s32 length() const noexcept
     {

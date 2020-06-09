@@ -17,7 +17,7 @@ bool is_accepted_character(char c) noexcept
     return ('0' <= c && c <= '9') || c == blank;
 }
 
-void load_file(SudokuGrid& grid, const char filename[]) noexcept(false)
+void load_file(SudokuGrid& grid, const char* filename) noexcept(false)
 {
     std::ifstream fs;
     fs.open(filename, std::ios_base::in);

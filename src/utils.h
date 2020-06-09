@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <bitset>
+#include <cassert>
+#include <vector>
 
 // @speed: potentially faster than unordered insert in cell possibilities?
 template <typename T>
@@ -11,9 +13,9 @@ typename std::vector<T>::iterator insert_sorted(std::vector<T>& v, const T& el)
 }
 
 template <size_t N>
-u8 first_unset_bit(const std::bitset<N>& bitset)
+size_t first_unset_bit(const std::bitset<N>& bitset)
 {
-    for (u8 i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         if (!bitset[i]) {
             return i;
         }
