@@ -28,11 +28,11 @@ AdjacentBoxCol SudokuGrid::get_adj_box_col(s32 box_num)
 {
     std::vector<Box> v;
     v.reserve(2);
-    for (s32 n = box_num % side_len; n <= 9;
+    for (s32 n = box_num % side_len; n < 9;
          n += 3) { // TODO(sdsmith): hardcoded
         if (n == box_num) {
-            continue;
-        } // cur box
+            continue; // cur box
+        }
         const Position p = box_position(n);
         v.emplace_back(*this, p.x, p.y);
     }

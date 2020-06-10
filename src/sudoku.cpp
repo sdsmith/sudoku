@@ -44,11 +44,15 @@ bool mark_possibilities_if_box_2_free_cells(
         }
     }
 
-    assert(v.size() == 2);
-    for (Cell* cell : v) {
-        cell->add_possibility(c);
+    assert(v.size() <= 2);
+    if (v.size() == 2) {
+        // there were only 2 cells
+        for (Cell* cell : v) {
+            cell->add_possibility(c);
+        }
+        return true;
     }
-    return true;
+    return false;
 }
 
 void solve_grid(SudokuGrid& grid)
