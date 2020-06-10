@@ -13,6 +13,12 @@ void Cell::remove_possibility(char c)
     possibilities.erase(it);
 }
 
+bool Cell::is_possibility(char c) const noexcept
+{
+    const auto it = std::find(possibilities.begin(), possibilities.end(), c);
+    return it != possibilities.end();
+}
+
 Box::Box(SudokuGrid& grid, s32 box_x, s32 box_y)
     : grid(&grid), box_x(box_x), box_y(box_y)
 {}

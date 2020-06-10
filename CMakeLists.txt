@@ -73,10 +73,11 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 # dependencies automatically when using CMake 2.8.11 or
 # later. Otherwise we have to add them here ourselves.
 if (CMAKE_VERSION VERSION_LESS 2.8.11)
-  include_directories("${gtest_SOURCE_DIR}/include")
+  target_include_directories(sudoku_test "${gtest_SOURCE_DIR}/include")
 endif()
 
 file(GLOB_RECURSE test_files "${test_dir}/*.cpp")
-add_executable(sudoku_test ${test_files})
+add_executable(sudoku_test ${test_files} ${source_dir}/box.cpp)
 target_link_libraries(sudoku_test gtest_main)
+target_include_directories(sudoku_test PUBLIC src)
 add_test(NAME sudoku_test COMMAND sudoku_test)

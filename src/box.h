@@ -14,6 +14,7 @@ struct Cell {
 
     void add_possibility(char c);
     void remove_possibility(char c);
+    [[nodiscard]] bool is_possibility(char c) const noexcept;
 };
 
 class SudokuGrid; // TODO(sdsmith): fix
