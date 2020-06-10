@@ -8,7 +8,7 @@ project(sudoku)
 
 set(source_dir src)
 set(test_dir test)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ..)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

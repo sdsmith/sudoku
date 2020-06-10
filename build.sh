@@ -1,11 +1,10 @@
 #!/bin/bash
 
-if ! [[ -d "artifacts" ]]; then
-    echo "WARNING: run config.sh"
-    exit 1
-fi
-
+mkdir -p artifacts >/dev/null
 pushd . >/dev/null
-cd artifacts
-make $*
+cd artifacts >/dev/null
+# Config step: point to CMakeLists.txt
+cmake ..
+# Build: point to cache from config
+cmake $* --build .
 popd >/dev/null
